@@ -182,6 +182,31 @@ contract DSTokenTest is DSTest {
         token.transferFrom(self, self, token.balanceOf(self) + 1);
     }
 
+    function testRecap() public {
+        uint supp = token.totalSupply();
+        token.recap(supp+100);
+        assertEq(token.cap(),supp+100);
+    }
+
+    function testSupplyRecap() public {
+        uint supp = token.totalSupply();
+        token.mint(101);
+        token.recap(supp+101);
+        try token.recap(supp+100) {
+            assertTrue(false,"recap should fail");
+        } catch { }
+    }
+
+
+    function testMintCap() public {
+        uint supp = token.totalSupply();
+        token.recap(supp+100);
+        token.mint(100);
+        try token.mint(1) {
+            assertTrue(false,"mint should fail");
+        } catch {}
+    }
+
     function testMint() public {
         uint mintAmount = 10;
         token.mint(mintAmount);

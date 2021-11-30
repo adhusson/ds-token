@@ -29,6 +29,7 @@ contract DSToken is DSMath, DSAuth {
     string                                            public  symbol;
     uint8                                             public  decimals = 18; // standard token precision. override to customize
     string                                            public  name = "";     // Optional token name
+    uint256                                           public cap = type(uint256).max;
 
 
     constructor(string memory symbol_) public {
@@ -37,6 +38,7 @@ contract DSToken is DSMath, DSAuth {
 
     event Approval(address indexed src, address indexed guy, uint wad);
     event Transfer(address indexed src, address indexed dst, uint wad);
+    event Recap(uint wad);
     event Mint(address indexed guy, uint wad);
     event Burn(address indexed guy, uint wad);
     event Stop();
@@ -94,6 +96,11 @@ contract DSToken is DSMath, DSAuth {
         transferFrom(src, dst, wad);
     }
 
+    function recap(uint wad) auth external {
+        require(totalSupply <= wad,"ds-token-cap-exceeded");
+        cap = wad;
+        emit Recap(wad);
+    }
 
     function mint(uint wad) external {
         mint(msg.sender, wad);
@@ -106,6 +113,7 @@ contract DSToken is DSMath, DSAuth {
     function mint(address guy, uint wad) public auth stoppable {
         balanceOf[guy] = add(balanceOf[guy], wad);
         totalSupply = add(totalSupply, wad);
+        require(totalSupply <= cap,"ds-token-cap-exceeded");
         emit Mint(guy, wad);
     }
 
