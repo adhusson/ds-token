@@ -102,10 +102,6 @@ contract DSToken is DSMath, DSAuth {
         emit Recap(wad);
     }
 
-    function mint(uint wad) external {
-        mint(msg.sender, wad);
-    }
-
     function burn(uint wad) external {
         burn(msg.sender, wad);
     }
